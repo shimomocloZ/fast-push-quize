@@ -1,0 +1,13 @@
+{
+  "name": "fast-push-quize",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "shimomocloZ <shimomoclo.sys@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "echo build"
+  },
+  "dependencies": {
+    "firebase": "^9.6.11"
+  }
+}
