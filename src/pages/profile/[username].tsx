@@ -1,34 +1,33 @@
-import { doc, getDoc, getFirestore } from 'firebase/firestore'
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+import Head from "next/head";
 import { useRouter } from "next/router";
-import Head from 'next/head'
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 type UserProfileType = {
-  username: string
-  message: string
-}
+  username: string;
+  message: string;
+};
 
 export default function UserName() {
-  const router = useRouter()
-  const { username } = router.query
+  const router = useRouter();
+  const { username } = router.query;
 
-  const [profile, setProfile] = useState<UserProfileType | null>(null)
+  const [profile, setProfile] = useState<UserProfileType | null>(null);
 
   const getUser = async () => {
-    const db = getFirestore()
-    const profileDoc = await getDoc(doc(db, 'profile', username as string))
-    const data = profileDoc.data() as UserProfileType
-    return data
-
-  }
+    const db = getFirestore();
+    const profileDoc = await getDoc(doc(db, "profile", username as string));
+    const data = profileDoc.data() as UserProfileType;
+    return data;
+  };
   useEffect(() => {
     const effect = async () => {
-      const profile = await getUser()
-      setProfile(profile)
-    }
-    effect()
+      const profile = await getUser();
+      setProfile(profile);
+    };
+    effect();
     // You also have your firebase app initialized
-  }, [])
+  }, []);
   return (
     <div className="container">
       <Head>
@@ -42,5 +41,5 @@ export default function UserName() {
         <p>{profile?.message}</p>
       </main>
     </div>
-  )
+  );
 }

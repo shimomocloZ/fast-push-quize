@@ -1,0 +1,22 @@
+{
+  "recommendations": [
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag",
+    "wmaurer.change-case",
+    "streetsidesoftware.code-spell-checker",
+    "dbaeumer.vscode-eslint",
+    "mhutchie.git-graph",
+    "github.vscode-pull-request-github",
+    "eamodio.gitlens",
+    "ecmel.vscode-html-css",
+    "oderwat.indent-rainbow",
+    "ms-ceintl.vscode-language-pack-ja",
+    "mkaufman.htmlhint",
+    "esbenp.prettier-vscode",
+    "christian-kohler.path-intellisense",
+    "rvest.vs-code-prettier-eslint",
+    "stylelint.vscode-stylelint",
+    "mosapride.zenkaku",
+    "artdiniz.quitcontrol-vscode"
+  ]
+}

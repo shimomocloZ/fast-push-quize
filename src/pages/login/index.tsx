@@ -1,7 +1,7 @@
-import React from 'react';
-import {auth} from '../../firebase/clientApp';
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import Link from 'next/link';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import Link from "next/link";
+import React from "react";
+import { auth } from "../../firebase/clientApp";
 
 const Login = () => {
   const handleSubmit = (event: any) => {
@@ -10,11 +10,11 @@ const Login = () => {
     const { email, password } = event.target.elements;
     signInWithEmailAndPassword(auth, email.value, password.value)
       .then((user) => {
-        console.log('ログイン成功=', user.user.uid)
+        console.log("ログイン成功=", user.user.uid);
       })
       .catch((error) => {
-        console.error(error)
-      })
+        console.error(error);
+      });
   };
 
   return (
@@ -35,7 +35,8 @@ const Login = () => {
         </div>
         <hr />
         <div>
-          <Link href={'/signup'}><button>Register</button>
+          <Link href={"/signup"}>
+            <button>Register</button>
           </Link>
         </div>
       </form>
@@ -43,4 +44,4 @@ const Login = () => {
   );
 };
 
-export default Login
+export default Login;
