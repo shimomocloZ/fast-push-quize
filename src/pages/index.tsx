@@ -1,38 +1,38 @@
-import { getFirestore, setDoc, doc } from 'firebase/firestore'
-import Head from 'next/head'
-import Link from 'next/link'
-import Script from 'next/script'
-import { useEffect } from 'react'
-import { useUser } from '../context/userContext'
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+import Head from "next/head";
+import Link from "next/link";
+import { useEffect } from "react";
+import { useUser } from "../context/userContext";
 
 export default function Home() {
   // Our custom hook to get context values
-  const { isLoading, user } = useUser()
+  const { isLoading, user } = useUser();
 
-  const profile = { username: 'shimomoclo.sys@gmail.com', message: 'Awesome!!' }
+  const profile = {
+    username: "shimomoclo.sys@gmail.com",
+    message: "Awesome!!",
+  };
 
   useEffect(() => {
     if (!isLoading) {
       // You know that the user is loaded: either logged in or out!
-      console.log(user)
+      console.log(user);
     }
     // You also have your firebase app initialized
-  }, [isLoading, user])
+  }, [isLoading, user]);
 
   const createUser = async () => {
-    const db = getFirestore()
-    await setDoc(doc(db, 'profile', profile.username), profile)
+    const db = getFirestore();
+    await setDoc(doc(db, "profile", profile.username), profile);
 
-    alert('User created!!')
-  }
+    alert("User created!!");
+  };
 
   return (
     <div className="container">
       <Head>
         <title>Next.js w/ Firebase Client-Side</title>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="google-signin-client_id" content="550025353067-roab6932n3370pmi25rod80hsbte052q.apps.googleusercontent.com"></meta>
-        <Script src='https://apis.google.com/js/platform.js' async defer></Script>
       </Head>
 
       <main>
@@ -199,5 +199,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }
