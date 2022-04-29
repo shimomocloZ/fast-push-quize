@@ -10,6 +10,12 @@
 yarn global add firebase-tools
 ```
 
+- vercel cliをグローバルインストール
+
+```sh
+yarn global add vercel
+```
+
 - 依存パッケージをインストール
 
 ```sh
@@ -21,13 +27,15 @@ yarn
 - ローカルサーバー起動
 
 ```sh
-firebase serve
+yarn dev
 ```
 
 ## デプロイ
 
-- Firebaseにデプロイ
+- Githubのmainブランチへのプッシュで、自動的にVercelにデプロイされる
+
+- 手動でデプロイする場合は以下
 
 ```sh
-firebase deploy
+vercel
 ```
