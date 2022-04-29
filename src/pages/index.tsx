@@ -1,7 +1,6 @@
 import { getFirestore, setDoc, doc } from 'firebase/firestore'
 import Head from 'next/head'
 import Link from 'next/link'
-import Script from 'next/script'
 import { useEffect } from 'react'
 import { useUser } from '../context/userContext'
 
@@ -31,8 +30,6 @@ export default function Home() {
       <Head>
         <title>Next.js w/ Firebase Client-Side</title>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="google-signin-client_id" content="550025353067-roab6932n3370pmi25rod80hsbte052q.apps.googleusercontent.com"></meta>
-        <Script src='https://apis.google.com/js/platform.js' async defer></Script>
       </Head>
 
       <main>

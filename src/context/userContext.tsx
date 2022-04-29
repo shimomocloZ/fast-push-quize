@@ -22,7 +22,7 @@ export default function UserContextComp({ children }: Props): JSX.Element {
     // Listen authenticated user
     const app = createFirebaseApp()
     const auth = getAuth(app)
-    const unsubscriber = onAuthStateChanged(auth, async (user) => {
+    const unSubscriber = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
           // User is signed in.
@@ -39,7 +39,7 @@ export default function UserContextComp({ children }: Props): JSX.Element {
     })
 
     // Unsubscribe auth listener on unmount
-    return () => unsubscriber()
+    return () => unSubscriber()
   }, [])
 
   return (
