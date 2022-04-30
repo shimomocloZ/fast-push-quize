@@ -2,7 +2,6 @@ import { doc, getFirestore, setDoc } from 'firebase/firestore'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect } from 'react'
-// import '../../styles/Home.module.css'
 import { useUser } from '../context/userContext'
 
 export default function Home() {
@@ -34,7 +33,6 @@ export default function Home() {
       <Head>
         <title>Next.js w/ Firebase Client-Side</title>
         <link rel='icon' href='/favicon.ico' />
-        <link href='/styles/Home.module.css' rel='stylesheet' />
       </Head>
 
       <main>
@@ -50,7 +48,7 @@ export default function Home() {
         </Link>
       </main>
 
-      {/* <style jsx>{`
+      <style jsx>{`
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
@@ -179,9 +177,9 @@ export default function Home() {
             flex-direction: column;
           }
         }
-      `}</style> */}
+      `}</style>
 
-      {/* <style jsx global>{`
+      <style jsx global>{`
         html,
         body {
           padding: 0;
@@ -193,7 +191,7 @@ export default function Home() {
         * {
           box-sizing: border-box;
         }
-      `}</style> */}
+      `}</style>
     </div>
   )
 }
