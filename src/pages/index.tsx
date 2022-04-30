@@ -10,7 +10,7 @@ type ChatType = {
 }
 
 const Home = () => {
-  const [socket, _] = useState(() => io())
+  const [socket, _] = useState(() => io({ path: '/api/socketio' }))
   const [isConnected, setIsConnected] = useState(false)
   const [newChat, setNewChat] = useState<ChatType>({
     userName: '',
@@ -70,7 +70,7 @@ const Home = () => {
 
   const handleSubmit = async () => {
     const datetime = dayjs().format('YYYY-MM-DD HH:mm:ss')
-    await fetch(location.href + 'chat', {
+    await fetch(location.href + 'api/chat', {
       method: 'POST',
       mode: 'cors',
       headers: {
