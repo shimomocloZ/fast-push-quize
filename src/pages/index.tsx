@@ -1,53 +1,48 @@
-import { doc, getFirestore, setDoc } from "firebase/firestore";
-import Head from "next/head";
-import Link from "next/link";
-import { useEffect } from "react";
-import { useUser } from "../context/userContext";
+import { doc, getFirestore, setDoc } from 'firebase/firestore'
+import Head from 'next/head'
+import Link from 'next/link'
+import { useEffect } from 'react'
+import { useUser } from '../context/userContext'
 
 export default function Home() {
   // Our custom hook to get context values
-  const { isLoading, user } = useUser();
+  const { isLoading, user } = useUser()
 
   const profile = {
-    username: "shimomoclo.sys@gmail.com",
-    message: "Awesome!!",
-  };
+    username: 'shimomoclo.sys@gmail.com',
+    message: 'Awesome!!',
+  }
 
   useEffect(() => {
     if (!isLoading) {
       // You know that the user is loaded: either logged in or out!
-      console.log(user);
+      console.log(user)
     }
     // You also have your firebase app initialized
-  }, [isLoading, user]);
+  }, [isLoading, user])
 
   const createUser = async () => {
-    const db = getFirestore();
-    await setDoc(doc(db, "profile", profile.username), profile);
+    const db = getFirestore()
+    await setDoc(doc(db, 'profile', profile.username), profile)
 
-    alert("User created!!");
-  };
+    alert('User created!!')
+  }
 
   return (
-    <div className="container">
+    <div className='container'>
       <Head>
         <title>Next.js w/ Firebase Client-Side</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel='icon' href='/favicon.ico' />
       </Head>
 
       <main>
-        <h1 className="title">Next.js w/ Firebase Client-Side</h1>
-        <p className="description">Fill in your credentials to get started</p>
+        <h1 className='title'>Next.js w/ Firebase Client-Side</h1>
+        <p className='description'>Fill in your credentials to get started</p>
 
-        <p className="description">
-          Cloud Firestore Security Rules write permissions are required for
-          adding users
-        </p>
+        <p className='description'>Cloud Firestore Security Rules write permissions are required for adding users</p>
         <button onClick={createUser}>Create 'nextjs_user'</button>
-        <div className="g-signin2" data-onsuccess="onSignIn"></div>
-        <p className="description">
-          Please press the link below after adding the user
-        </p>
+        <div className='g-signin2' data-onsuccess='onSignIn'></div>
+        <p className='description'>Please press the link below after adding the user</p>
         <Link href={`/profile/${profile.username}`} passHref>
           <a>Go to SSR Page</a>
         </Link>
@@ -133,8 +128,8 @@ export default function Home() {
           border-radius: 5px;
           padding: 0.75rem;
           font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+          font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono,
+            Courier New, monospace;
         }
 
         .grid {
@@ -189,9 +184,8 @@ export default function Home() {
         body {
           padding: 0;
           margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
+            Droid Sans, Helvetica Neue, sans-serif;
         }
 
         * {
@@ -199,5 +193,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  );
+  )
 }

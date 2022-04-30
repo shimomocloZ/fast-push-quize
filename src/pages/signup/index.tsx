@@ -1,32 +1,32 @@
 // firebase v9 auth, SignUp sample
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
-import { auth } from "../../firebase/clientApp";
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import React, { useState } from 'react'
+import { auth } from '../../firebase/clientApp'
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   // console.log(email, password);
   const handleSubmit = (event: any) => {
-    event.preventDefault();
-    const { email, password } = event.target.elements;
+    event.preventDefault()
+    const { email, password } = event.target.elements
     createUserWithEmailAndPassword(auth, email.value, password.value)
       .then((userCredential) => {
-        console.log("user created");
-        console.log(userCredential);
+        console.log('user created')
+        console.log(userCredential)
       })
       .catch((error) => {
-        alert(error.message);
-        console.error(error);
-      });
-    console.log(email.value);
-  };
+        alert(error.message)
+        console.error(error)
+      })
+    console.log(email.value)
+  }
   const handleChangeEmail = (event: any) => {
-    setEmail(event.currentTarget.value);
-  };
+    setEmail(event.currentTarget.value)
+  }
   const handleChangePassword = (event: any) => {
-    setPassword(event.currentTarget.value);
-  };
+    setPassword(event.currentTarget.value)
+  }
 
   return (
     <div>
@@ -34,19 +34,14 @@ const SignUp = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label>メールアドレス</label>
-          <input
-            name="email"
-            type="email"
-            placeholder="email"
-            onChange={(event) => handleChangeEmail(event)}
-          />
+          <input name='email' type='email' placeholder='email' onChange={(event) => handleChangeEmail(event)} />
         </div>
         <div>
           <label>パスワード</label>
           <input
-            name="password"
-            type="password"
-            placeholder="password"
+            name='password'
+            type='password'
+            placeholder='password'
             onChange={(event) => handleChangePassword(event)}
           />
         </div>
@@ -56,7 +51,7 @@ const SignUp = () => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default SignUp;
+export default SignUp

@@ -1,21 +1,21 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
-import Link from "next/link";
-import React from "react";
-import { auth } from "../../firebase/clientApp";
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import Link from 'next/link'
+import React from 'react'
+import { auth } from '../../firebase/clientApp'
 
 const Login = () => {
   const handleSubmit = (event: any) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const { email, password } = event.target.elements;
+    const { email, password } = event.target.elements
     signInWithEmailAndPassword(auth, email.value, password.value)
       .then((user) => {
-        console.log("ログイン成功=", user.user.uid);
+        console.log('ログイン成功=', user.user.uid)
       })
       .catch((error) => {
-        console.error(error);
-      });
-  };
+        console.error(error)
+      })
+  }
 
   return (
     <div>
@@ -23,11 +23,11 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label>メールアドレス</label>
-          <input name="email" type="email" placeholder="email" />
+          <input name='email' type='email' placeholder='email' />
         </div>
         <div>
           <label>パスワード</label>
-          <input name="password" type="password" placeholder="password" />
+          <input name='password' type='password' placeholder='password' />
         </div>
         <hr />
         <div>
@@ -35,13 +35,13 @@ const Login = () => {
         </div>
         <hr />
         <div>
-          <Link href={"/signup"}>
+          <Link href={'/signup'}>
             <button>Register</button>
           </Link>
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

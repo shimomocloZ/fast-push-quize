@@ -7,9 +7,20 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint  --dir src",
+    "lint:fix": "next lint --fix  --dir src --ext .js,.jsx,.mjs,.cjs,.ts,.tsx --ignore-path .gitignore",
+    "lint:style": "stylelint \"**/*.{css,scss,sass}\"",
+    "lint:style:fix": "stylelint --fix \"**/*.{css,scss,sass}\"",
+    "lint:fix:all": "run-p lint:fix lint:style:fix",
+    "postinstall": "node ./git-hooks/simple-git-hooks-setup.js"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "yarn lint:fix:all",
+    "pre-push": "git pull origin main --no-rebase && echo \"差分がある場合は再度プッシュしてください。\" && yarn lint:fix:all"
   },
   "dependencies": {
+    "bootstrap": "^5.1.3",
     "firebase": "^9.6.11",
     "firebase-admin": "9.12.0",
     "next": "latest",
@@ -20,6 +31,15 @@
     "@firebase/auth-types": "^0.11.0",
     "@types/node": "^17.0.29",
     "@types/react": "^18.0.8",
+    "@types/styled-jsx": "^3.4.4",
+    "eslint": "^8.14.0",
+    "eslint-config-next": "^12.1.5",
+    "eslint-config-prettier": "^8.5.0",
+    "npm-run-all": "^4.1.5",
+    "simple-git-hooks": "^2.7.0",
+    "stylelint": "^14.8.1",
+    "stylelint-config-recommended": "^7.0.0",
+    "stylelint-order": "^5.0.0",
     "typescript": "^4.6.3"
   }
 }
