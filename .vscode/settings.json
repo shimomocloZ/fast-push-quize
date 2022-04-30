@@ -28,7 +28,8 @@
     "source.organizeImports": true
   },
   "[css]": {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
   },
   "[scss]": {
     "editor.formatOnSave": false
