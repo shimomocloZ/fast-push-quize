@@ -5,9 +5,9 @@
   "author": "shimomocloZ <shimomoclo.sys@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "nodemon",
+    "build": "next build  && tsc --project tsconfig.server.json",
+    "start": "NODE_ENV=production node dist/index.js",
     "lint": "next lint  --dir src",
     "lint:fix": "next lint --fix  --dir src --ext .js,.jsx,.mjs,.cjs,.ts,.tsx --ignore-path .gitignore",
     "lint:style": "stylelint \"**/*.{css,scss,sass}\"",
