@@ -1,10 +1,32 @@
-import { doc, getFirestore, setDoc } from 'firebase/firestore'
-import Head from 'next/head'
-import Link from 'next/link'
-import { useEffect } from 'react'
+import dayjs from 'dayjs'
+import { useEffect, useState } from 'react'
+import io from 'socket.io-client'
 import { useUser } from '../context/userContext'
 
-export default function Home() {
+type ChatType = {
+  userName: string
+  message: string
+  datetime: string
+}
+
+const Home = () => {
+  const [socket, _] = useState(() => io())
+  const [isConnected, setIsConnected] = useState(false)
+  const [newChat, setNewChat] = useState<ChatType>({
+    userName: '',
+    message: '',
+    datetime: '',
+  })
+  const [chats, setChats] = useState<ChatType[]>([
+    {
+      userName: 'TEST BOT',
+      message: 'Hello World',
+      datetime: '2020-09-01 12:00:00',
+    },
+  ])
+  const [userName, setUserName] = useState<string>('')
+  const [message, setMessage] = useState<string>('')
+
   // Our custom hook to get context values
   const { isLoading, user } = useUser()
 
@@ -21,31 +43,87 @@ export default function Home() {
     // You also have your firebase app initialized
   }, [isLoading, user])
 
-  const createUser = async () => {
-    const db = getFirestore()
-    await setDoc(doc(db, 'profile', profile.username), profile)
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('socket connected!!')
+      setIsConnected(true)
+    })
+    socket.on('disconnect', () => {
+      console.log('socket disconnected!!')
+      setIsConnected(false)
+    })
+    socket.on('update-data', (newData: ChatType) => {
+      console.log('Get Updated Data', newData)
+      setNewChat(newData)
+    })
 
-    alert('User created!!')
+    return () => {
+      socket.close()
+    }
+  }, [socket])
+
+  useEffect(() => {
+    if (newChat.message) {
+      setChats([...chats, newChat])
+    }
+  }, [newChat])
+
+  const handleSubmit = async () => {
+    const datetime = dayjs().format('YYYY-MM-DD HH:mm:ss')
+    await fetch(location.href + 'chat', {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userName,
+        message,
+        datetime,
+      }),
+    })
+    setMessage('')
   }
+
+  // const createUser = async () => {
+  //   const db = getFirestore()
+  //   await setDoc(doc(db, 'profile', profile.username), profile)
+
+  //   alert('User created!!')
+  // }
 
   return (
     <div className='container'>
-      <Head>
-        <title>Next.js w/ Firebase Client-Side</title>
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
-
       <main>
-        <h1 className='title'>Next.js w/ Firebase Client-Side</h1>
-        <p className='description'>Fill in your credentials to get started</p>
+        <div>
+          {chats?.map((chat, index) => (
+            <>
+              <dl key={`${index}`}>
+                <dt className='name'>{chat.userName}</dt>
+                <dd>{chat.message}</dd>
+                <dd>{chat.datetime}</dd>
+              </dl>
+            </>
+          ))}
+        </div>
 
-        <p className='description'>Cloud Firestore Security Rules write permissions are required for adding users</p>
-        <button onClick={createUser}>Create 'nextjs_user'</button>
-        <div className='g-signin2' data-onsuccess='onSignIn'></div>
-        <p className='description'>Please press the link below after adding the user</p>
-        <Link href={`/profile/${profile.username}`} passHref>
-          <a>Go to SSR Page</a>
-        </Link>
+        <input
+          name='name'
+          required
+          type='text'
+          placeholder='name'
+          onChange={(event) => setUserName(event.target.value)}
+        />
+        <input
+          name='message'
+          required
+          type='text'
+          placeholder='message'
+          onChange={(event) => setMessage(event.target.value)}
+        />
+        <button type='submit' onClick={handleSubmit}>
+          Submit Chat
+        </button>
       </main>
 
       <style jsx>{`
@@ -122,6 +200,10 @@ export default function Home() {
           line-height: 1.5;
           font-size: 1.5rem;
         }
+        .name {
+          font-weight: 700;
+          padding-right: 5px;
+        }
 
         code {
           background: #fafafa;
@@ -195,3 +277,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home
