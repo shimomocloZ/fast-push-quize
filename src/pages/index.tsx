@@ -1,4 +1,3 @@
-import { fabric } from 'fabric'
 import { addDoc, collection, doc, Firestore, onSnapshot, setDoc, Unsubscribe } from 'firebase/firestore'
 import React, { useEffect, useRef, useState } from 'react'
 import { useUser } from '../context/userContext'
@@ -45,21 +44,6 @@ const Home = () => {
     }
     // You also have your firebase app initialized
   }, [isLoading, user])
-
-  useEffect(() => {
-    const canvas = new fabric.Canvas(canvasElementRef.current, {
-      isDrawingMode: true, // 手書きモード
-      width: 800,
-      height: 300,
-      // backgroundColor: '#80beaf',
-      // backgroundImage:
-    })
-
-    canvas.setBackgroundImage(
-      'https://api.mediacms.jp/uploads/medium_20210118_ktgwyzr_2542364bcd.jpg',
-      canvas.renderAll.bind(canvas),
-    )
-  }, [])
 
   useEffect(() => {
     console.log('snapshot use effect')
