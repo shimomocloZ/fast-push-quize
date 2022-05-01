@@ -1,11 +1,11 @@
-import { fabric } from 'fabric'
-import { addDoc, collection, doc, Firestore, onSnapshot, setDoc, Unsubscribe } from 'firebase/firestore'
+import { collection, doc, Firestore, onSnapshot, setDoc, Unsubscribe } from 'firebase/firestore'
 import React, { useEffect, useRef, useState } from 'react'
-import { useUser } from '../context/userContext'
-import { db } from '../firebase/clientApp'
+import uuid from 'react-uuid'
+import { useUser } from '../../context/userContext'
+import { db } from '../../firebase/clientApp'
 
 type HandlerType = {
-  handler: () => void
+  handler: (event: React.MouseEvent | React.TouchEvent) => void
 }
 
 type PointerType = {
@@ -21,14 +21,13 @@ type DrawElementType = {
 
 const Home = () => {
   const [elements, setElements] = useState<DrawElementType[]>([])
+  //   const [newElement, setNewElement] = useState<DrawElementType>(null)
   // Our custom hook to get context values
   const { isLoading, user } = useUser()
   const svgElementRef = useRef<SVGSVGElement>(null)
   const canvasElementRef = useRef<HTMLCanvasElement>(null)
   const [dragMoveHandler, setDragMoveHandler] = useState<HandlerType | null>(null)
   const [dragEndHandler, setDragEndHandler] = useState<HandlerType | null>(null)
-  const [clientX, setClientX] = useState<number>(null)
-  const [clientY, setClientY] = useState<number>(null)
   // let clientX = 0
   // let clientY = 0
   const [elementsCollectionRef, setElementsCollectionRef] = useState<Firestore>(null)
@@ -46,20 +45,20 @@ const Home = () => {
     // You also have your firebase app initialized
   }, [isLoading, user])
 
-  useEffect(() => {
-    const canvas = new fabric.Canvas(canvasElementRef.current, {
-      isDrawingMode: true, // 手書きモード
-      width: 800,
-      height: 300,
-      // backgroundColor: '#80beaf',
-      // backgroundImage:
-    })
+  //   useEffect(() => {
+  //     const canvas = new fabric.Canvas(canvasElementRef.current, {
+  //       isDrawingMode: true, // 手書きモード
+  //       width: 800,
+  //       height: 300,
+  //       // backgroundColor: '#80beaf',
+  //       // backgroundImage:
+  //     })
 
-    canvas.setBackgroundImage(
-      'https://api.mediacms.jp/uploads/medium_20210118_ktgwyzr_2542364bcd.jpg',
-      canvas.renderAll.bind(canvas),
-    )
-  }, [])
+  //     canvas.setBackgroundImage(
+  //       'https://api.mediacms.jp/uploads/medium_20210118_ktgwyzr_2542364bcd.jpg',
+  //       canvas.renderAll.bind(canvas),
+  //     )
+  //   }, [])
 
   useEffect(() => {
     console.log('snapshot use effect')
@@ -74,33 +73,28 @@ const Home = () => {
     fn()
   }, [])
 
-  const dragStart = (e: React.MouseEvent<HTMLOrSVGElement> | React.TouchEvent<HTMLOrSVGElement>) => {
+  const dragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault()
-    // e.persist()
-    // console.log('aaaa')
     const newElement: DrawElementType = { id: null, points: [], color: 'red' }
-    const newElements = elements.concat(newElement)
-    setElements(newElements)
+    setElements([...elements, newElement])
     const rect = svgElementRef.current.getBoundingClientRect()
-    setClientX(rect.x)
-    setClientY(rect.y)
     setDragMoveHandler({
-      handler: () => {
-        // console.log(e)
-        if (e.nativeEvent instanceof TouchEvent) {
-          setClientX(e.nativeEvent.touches[0].clientX)
-          setClientY(e.nativeEvent.touches[0].clientY)
-        } else if (e.nativeEvent instanceof MouseEvent) {
-          setClientX(e.nativeEvent.clientX)
-          setClientY(e.nativeEvent.clientY)
+      handler: (event: React.MouseEvent | React.TouchEvent) => {
+        let currentPointer: PointerType
+        if (event.nativeEvent instanceof TouchEvent) {
+          currentPointer = {
+            x: event.nativeEvent.touches[0].clientX - rect.x,
+            y: event.nativeEvent.touches[0].clientY - rect.y,
+          }
+        } else if (event.nativeEvent instanceof MouseEvent) {
+          //   console.log(e.nativeEvent.clientX, e.nativeEvent.clientY)
+          currentPointer = {
+            x: event.nativeEvent.clientX - rect.x,
+            y: event.nativeEvent.clientY - rect.y,
+          }
         }
-        console.log(clientX, rect.x, clientY, rect.y)
-        console.log(clientX - rect.x, clientY - rect.y)
-        newElement.points.push({
-          x: clientX - rect.x,
-          y: clientY - rect.y,
-        })
-        // console.log(newElement.points)
+        updateElements(currentPointer)
+        // console.log('beforeUpdateNewElements', JSON.stringify(elements))
       },
     })
     setDragEndHandler({
@@ -126,19 +120,15 @@ const Home = () => {
     // }
   }
   const dragMove = (e: React.MouseEvent | React.TouchEvent) => {
-    // console.log('drag on...')
     e.preventDefault()
     if (dragMoveHandler) {
-      // console.log('move handler')
-      dragMoveHandler.handler()
+      dragMoveHandler.handler(e)
     }
   }
   const dragEnd = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault()
-    // console.log('drag end...')
     if (dragEndHandler) {
-      // console.log('end handler')
-      dragEndHandler.handler()
+      dragEndHandler.handler(e)
     }
     setDragMoveHandler(null)
     setDragEndHandler(null)
@@ -152,6 +142,16 @@ const Home = () => {
     return attr
   }
 
+  const updateElements = (pointer: PointerType): void => {
+    setElements((elements) => {
+      const beforeElements = [...elements]
+      const currentProcessElement = beforeElements.pop()
+      currentProcessElement.points = [...currentProcessElement.points, pointer]
+      const newElements = [...beforeElements, currentProcessElement]
+      return newElements
+    })
+  }
+
   const createDoc = async () => {
     // try {
     await setDoc(doc(db, 'temps', 'element'), { elements: 'element' })
@@ -160,23 +160,16 @@ const Home = () => {
     //   console.log(e)
     // }
   }
-
-  const createUser = async () => {
-    await addDoc(collection(db, 'profile'), profile)
-
-    alert('User created!!')
-  }
-
   return (
     <div>
-      <main>
-        <button onClick={createDoc}>ドキュメント作成</button>
-        <canvas ref={canvasElementRef}></canvas>
-        {/* <svg
+      <main className='container'>
+        <svg
           ref={svgElementRef}
           className='canvas'
           version='1.1'
           xmlns='http://www.w3.org/2000/svg'
+          height={500}
+          width={1500}
           onMouseDown={dragStart}
           onMouseMove={dragMove}
           onMouseUp={dragEnd}
@@ -194,32 +187,19 @@ const Home = () => {
               points={pointsAttr(element.points)}
             />
           ))}
-        </svg> */}
+        </svg>
       </main>
-
-      <style jsx>{`
-        .canvas {
-          border: solid 1px;
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans,
-            Droid Sans, Helvetica Neue, sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-        div {
-          padding: 0;
-          margin: 0;
-        }
-      `}</style>
+      <style jsx>
+        {`
+          .canvas {
+            border: solid ipx;
+            background-image: url(https://api.mediacms.jp/uploads/medium_20210118_ktgwyzr_2542364bcd.jpg);
+            background-repeat: no-repeat;
+            background-size: contain; /* 画像のサイズを指定    */
+            width: 100%; /* 横幅のサイズを指定    */
+          }
+        `}
+      </style>
     </div>
   )
 }

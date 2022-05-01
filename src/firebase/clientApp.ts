@@ -1,6 +1,7 @@
 import { getAnalytics } from 'firebase/analytics'
 import { FirebaseApp, FirebaseOptions, getApp, getApps, initializeApp } from 'firebase/app'
 import { Auth, getAuth } from 'firebase/auth'
+import { Firestore, getFirestore } from 'firebase/firestore'
 
 export const createFirebaseApp = () => {
   const clientCredentials: FirebaseOptions = {
@@ -31,3 +32,5 @@ export const createFirebaseApp = () => {
 }
 
 export const auth: Auth = getAuth(createFirebaseApp())
+
+export const db: Firestore = getFirestore()
