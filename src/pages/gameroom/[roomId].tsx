@@ -25,7 +25,6 @@ const Home = () => {
   const router = useRouter()
   const { roomId, permission } = router.query
   const [drawerElements, setDrawerElements] = useState<DrawElementType[]>([])
-  const [viewerElements, setViewerElements] = useState<DrawElementType[]>([])
   const { isLoading, user } = useUser()
   const svgElementRef = useRef<SVGSVGElement>(null)
   const [dragMoveHandler, setDragMoveHandler] = useState<HandlerType | null>(null)
@@ -41,17 +40,16 @@ const Home = () => {
 
   useEffect(() => {
     const tempDoc = query(collection(db, `temps/${roomId}/elements`))
-    onSnapshot(tempDoc, (snapshot) => {
+    const unsubscribe = onSnapshot(tempDoc, (snapshot) => {
       snapshot.docChanges().forEach((changes) => {
         const element = changes.doc.data() as DrawElementType
         element.id = changes.doc.id
         setDrawerElements((viewerElements) => {
-          const elements = [...viewerElements]
-          elements.push(element)
-          return elements
+          return [...viewerElements, element]
         })
       })
     })
+    return () => unsubscribe()
   }, [])
 
   const dragStart = (e: React.MouseEvent | React.TouchEvent) => {
@@ -80,7 +78,6 @@ const Home = () => {
       handler: () => {
         if (newElement.points.length === 0) return
         addDoc(collection(db, `temps/${roomId}/elements`), newElement)
-        // setViewerElements([...drawerElements])
       },
     })
     // if (this.selectedMode === "drawLine") {
