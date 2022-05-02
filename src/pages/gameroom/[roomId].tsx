@@ -23,8 +23,9 @@ type DrawElementType = {
 
 const Home = () => {
   const router = useRouter()
-  const { roomId } = router.query
-  const [elements, setElements] = useState<DrawElementType[]>([])
+  const { roomId, permission } = router.query
+  const [drawerElements, setDrawerElements] = useState<DrawElementType[]>([])
+  const [viewerElements, setViewerElements] = useState<DrawElementType[]>([])
   const { isLoading, user } = useUser()
   const svgElementRef = useRef<SVGSVGElement>(null)
   const [dragMoveHandler, setDragMoveHandler] = useState<HandlerType | null>(null)
@@ -41,21 +42,22 @@ const Home = () => {
   useEffect(() => {
     const tempDoc = query(collection(db, `temps/${roomId}/elements`))
     onSnapshot(tempDoc, (snapshot) => {
-      const serverElements: DrawElementType[] = []
       snapshot.docChanges().forEach((changes) => {
-        if (changes.type === 'added') {
-          const element = changes.doc.data() as DrawElementType
-          serverElements.push(element)
-        }
+        const element = changes.doc.data() as DrawElementType
+        element.id = changes.doc.id
+        setDrawerElements((viewerElements) => {
+          const elements = [...viewerElements]
+          elements.push(element)
+          return elements
+        })
       })
-      setElements([...elements, ...serverElements])
     })
   }, [])
 
   const dragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault()
     const newElement: DrawElementType = { id: uuid(), points: [], color: 'red' }
-    setElements([...elements, newElement])
+    setDrawerElements([...drawerElements, newElement])
     const rect = svgElementRef.current.getBoundingClientRect()
     setDragMoveHandler({
       handler: (event: React.MouseEvent | React.TouchEvent) => {
@@ -71,13 +73,14 @@ const Home = () => {
             y: event.nativeEvent.clientY - rect.y,
           }
         }
-        updateElements(currentPointer)
+        updateElementPoints(currentPointer)
       },
     })
     setDragEndHandler({
-      handler: async () => {
+      handler: () => {
         if (newElement.points.length === 0) return
-        await addDoc(collection(db, `temps/${roomId}/elements`), newElement)
+        addDoc(collection(db, `temps/${roomId}/elements`), newElement)
+        // setViewerElements([...drawerElements])
       },
     })
     // if (this.selectedMode === "drawLine") {
@@ -119,12 +122,12 @@ const Home = () => {
     return attr
   }
 
-  const updateElements = (pointer: PointerType): void => {
-    setElements((elements) => {
+  const updateElementPoints = (pointer: PointerType): void => {
+    setDrawerElements((elements) => {
       const beforeElements = [...elements]
-      const processNewElement = beforeElements.pop()
-      processNewElement.points = [...processNewElement.points, pointer]
-      const newElements = [...beforeElements, processNewElement]
+      const currentProcessElement = beforeElements.pop()
+      currentProcessElement.points = [...currentProcessElement.points, pointer]
+      const newElements = [...beforeElements, currentProcessElement]
       return newElements
     })
   }
@@ -145,7 +148,7 @@ const Home = () => {
           onTouchMove={dragMove}
           onTouchEnd={dragEnd}
         >
-          {elements.map((element) => (
+          {drawerElements.map((element) => (
             <polyline
               key={element.id}
               element-id={element.id}
@@ -157,6 +160,29 @@ const Home = () => {
             />
           ))}
         </svg>
+
+        {/* {permission === 'general' && (
+          <svg
+            ref={svgElementRef}
+            className='canvas'
+            version='1.1'
+            xmlns='http://www.w3.org/2000/svg'
+            height={500}
+            width={1500}
+          >
+            {viewerElements.map((element) => (
+              <polyline
+                key={element.id}
+                element-id={element.id}
+                fill='none'
+                stroke={element.color}
+                strokeLinecap='round'
+                strokeWidth='5'
+                points={pointsAttr(element.points)}
+              />
+            ))}
+          </svg>
+        )} */}
       </Container>
       <style jsx>
         {`
