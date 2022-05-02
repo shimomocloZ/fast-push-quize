@@ -1,6 +1,7 @@
 import { collection, doc, Firestore, onSnapshot, setDoc, Unsubscribe } from 'firebase/firestore'
 import React, { useEffect, useRef, useState } from 'react'
 import uuid from 'react-uuid'
+import { Container } from 'reactstrap'
 import { useUser } from '../../context/userContext'
 import { db } from '../../firebase/clientApp'
 
@@ -21,21 +22,11 @@ type DrawElementType = {
 
 const Home = () => {
   const [elements, setElements] = useState<DrawElementType[]>([])
-  //   const [newElement, setNewElement] = useState<DrawElementType>(null)
-  // Our custom hook to get context values
   const { isLoading, user } = useUser()
   const svgElementRef = useRef<SVGSVGElement>(null)
-  const canvasElementRef = useRef<HTMLCanvasElement>(null)
   const [dragMoveHandler, setDragMoveHandler] = useState<HandlerType | null>(null)
   const [dragEndHandler, setDragEndHandler] = useState<HandlerType | null>(null)
-  // let clientX = 0
-  // let clientY = 0
   const [elementsCollectionRef, setElementsCollectionRef] = useState<Firestore>(null)
-
-  const profile = {
-    username: 'shimomoclo.sys@gmail.com',
-    message: 'Awesome!!',
-  }
 
   useEffect(() => {
     if (!isLoading) {
@@ -44,21 +35,6 @@ const Home = () => {
     }
     // You also have your firebase app initialized
   }, [isLoading, user])
-
-  //   useEffect(() => {
-  //     const canvas = new fabric.Canvas(canvasElementRef.current, {
-  //       isDrawingMode: true, // 手書きモード
-  //       width: 800,
-  //       height: 300,
-  //       // backgroundColor: '#80beaf',
-  //       // backgroundImage:
-  //     })
-
-  //     canvas.setBackgroundImage(
-  //       'https://api.mediacms.jp/uploads/medium_20210118_ktgwyzr_2542364bcd.jpg',
-  //       canvas.renderAll.bind(canvas),
-  //     )
-  //   }, [])
 
   useEffect(() => {
     console.log('snapshot use effect')
@@ -87,14 +63,12 @@ const Home = () => {
             y: event.nativeEvent.touches[0].clientY - rect.y,
           }
         } else if (event.nativeEvent instanceof MouseEvent) {
-          //   console.log(e.nativeEvent.clientX, e.nativeEvent.clientY)
           currentPointer = {
             x: event.nativeEvent.clientX - rect.x,
             y: event.nativeEvent.clientY - rect.y,
           }
         }
         updateElements(currentPointer)
-        // console.log('beforeUpdateNewElements', JSON.stringify(elements))
       },
     })
     setDragEndHandler({
@@ -153,16 +127,12 @@ const Home = () => {
   }
 
   const createDoc = async () => {
-    // try {
     await setDoc(doc(db, 'temps', 'element'), { elements: 'element' })
     console.log('create doc')
-    // } catch (e) {
-    //   console.log(e)
-    // }
   }
   return (
     <div>
-      <main className='container'>
+      <Container>
         <svg
           ref={svgElementRef}
           className='canvas'
@@ -188,7 +158,7 @@ const Home = () => {
             />
           ))}
         </svg>
-      </main>
+      </Container>
       <style jsx>
         {`
           .canvas {
