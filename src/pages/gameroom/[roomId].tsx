@@ -157,29 +157,6 @@ const Home = () => {
             />
           ))}
         </svg>
-
-        {/* {permission === 'general' && (
-          <svg
-            ref={svgElementRef}
-            className='canvas'
-            version='1.1'
-            xmlns='http://www.w3.org/2000/svg'
-            height={500}
-            width={1500}
-          >
-            {viewerElements.map((element) => (
-              <polyline
-                key={element.id}
-                element-id={element.id}
-                fill='none'
-                stroke={element.color}
-                strokeLinecap='round'
-                strokeWidth='5'
-                points={pointsAttr(element.points)}
-              />
-            ))}
-          </svg>
-        )} */}
       </Container>
       <style jsx>
         {`

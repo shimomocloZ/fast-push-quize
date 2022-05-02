@@ -19,11 +19,8 @@ const Home = () => {
       <Container>
         <Col md={4}>
           <Button color='primary'>ルームを作成</Button>
-          <Link href={{ pathname: `/gameroom/1`, query: { permission: 'admin' } }} passHref>
-            <Button color='primary'>ルームに参加(管理者)</Button>
-          </Link>
-          <Link href={{ pathname: `/gameroom/1`, query: { permission: 'general' } }} passHref>
-            <Button color='primary'>ルームに参加(参加者)</Button>
+          <Link href={`/gameroom/1`} passHref>
+            <Button color='primary'>ルームに参加</Button>
           </Link>
         </Col>
       </Container>
