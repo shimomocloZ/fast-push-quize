@@ -1,4 +1,5 @@
-import { collection, doc, Firestore, onSnapshot, setDoc, Unsubscribe } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot, query } from 'firebase/firestore'
+import { useRouter } from 'next/router'
 import React, { useEffect, useRef, useState } from 'react'
 import uuid from 'react-uuid'
 import { Container } from 'reactstrap'
@@ -15,43 +16,45 @@ type PointerType = {
 }
 
 type DrawElementType = {
-  id: string | null
+  id: string
   points: PointerType[]
   color: string
 }
 
 const Home = () => {
+  const router = useRouter()
+  const { roomId } = router.query
   const [elements, setElements] = useState<DrawElementType[]>([])
   const { isLoading, user } = useUser()
   const svgElementRef = useRef<SVGSVGElement>(null)
   const [dragMoveHandler, setDragMoveHandler] = useState<HandlerType | null>(null)
   const [dragEndHandler, setDragEndHandler] = useState<HandlerType | null>(null)
-  const [elementsCollectionRef, setElementsCollectionRef] = useState<Firestore>(null)
 
   useEffect(() => {
     if (!isLoading) {
       // You know that the user is loaded: either logged in or out!
-      console.log(user)
+      // console.log(user)
     }
     // You also have your firebase app initialized
   }, [isLoading, user])
 
   useEffect(() => {
-    console.log('snapshot use effect')
-    const fn: Unsubscribe = () => {
-      return () => {
-        const tempDoc = doc(collection(db, 'temps'), 'elements')
-        onSnapshot(tempDoc, (snapshot) => {
-          console.log(snapshot.data())
-        })
-      }
-    }
-    fn()
+    const tempDoc = query(collection(db, `temps/${roomId}/elements`))
+    onSnapshot(tempDoc, (snapshot) => {
+      const serverElements: DrawElementType[] = []
+      snapshot.docChanges().forEach((changes) => {
+        if (changes.type === 'added') {
+          const element = changes.doc.data() as DrawElementType
+          serverElements.push(element)
+        }
+      })
+      setElements([...elements, ...serverElements])
+    })
   }, [])
 
   const dragStart = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault()
-    const newElement: DrawElementType = { id: null, points: [], color: 'red' }
+    const newElement: DrawElementType = { id: uuid(), points: [], color: 'red' }
     setElements([...elements, newElement])
     const rect = svgElementRef.current.getBoundingClientRect()
     setDragMoveHandler({
@@ -72,9 +75,9 @@ const Home = () => {
       },
     })
     setDragEndHandler({
-      handler: () => {
+      handler: async () => {
         if (newElement.points.length === 0) return
-        // this.elementsCollectionRef.add(newElement);
+        await addDoc(collection(db, `temps/${roomId}/elements`), newElement)
       },
     })
     // if (this.selectedMode === "drawLine") {
@@ -119,16 +122,11 @@ const Home = () => {
   const updateElements = (pointer: PointerType): void => {
     setElements((elements) => {
       const beforeElements = [...elements]
-      const currentProcessElement = beforeElements.pop()
-      currentProcessElement.points = [...currentProcessElement.points, pointer]
-      const newElements = [...beforeElements, currentProcessElement]
+      const processNewElement = beforeElements.pop()
+      processNewElement.points = [...processNewElement.points, pointer]
+      const newElements = [...beforeElements, processNewElement]
       return newElements
     })
-  }
-
-  const createDoc = async () => {
-    await setDoc(doc(db, 'temps', 'element'), { elements: 'element' })
-    console.log('create doc')
   }
   return (
     <div>
@@ -149,7 +147,8 @@ const Home = () => {
         >
           {elements.map((element) => (
             <polyline
-              key={uuid()}
+              key={element.id}
+              element-id={element.id}
               fill='none'
               stroke={element.color}
               strokeLinecap='round'
