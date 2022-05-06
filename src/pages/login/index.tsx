@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInAnonymously, signInWithEmailAndPassword } from 'firebase/auth'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
@@ -22,6 +22,19 @@ const Login = () => {
   const onClickLogin = (event: React.MouseEvent<HTMLInputElement>) => {
     event.preventDefault()
     signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log('ログイン成功=', userCredential.user.uid)
+        router.push('/')
+      })
+      .catch((error) => {
+        console.error(error)
+        alert('ログイン失敗！')
+      })
+  }
+
+  const onClickLoginWithAnonymous = (event: React.MouseEvent<HTMLInputElement>) => {
+    event.preventDefault()
+    signInAnonymously(auth)
       .then((userCredential) => {
         console.log('ログイン成功=', userCredential.user.uid)
         router.push('/')
@@ -63,7 +76,7 @@ const Login = () => {
           </Link>
         </FormGroup>
         <div>
-          <Button color='secondary' type='button'>
+          <Button color='secondary' type='button' onClick={onClickLoginWithAnonymous}>
             ゲストログイン
           </Button>
         </div>
