@@ -1,6 +1,6 @@
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth'
+import { onAuthStateChanged, User } from 'firebase/auth'
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
-import { createFirebaseApp } from '../firebase/clientApp'
+import { auth } from '../firebase/clientApp'
 
 type UserContextType = {
   user: User | null
@@ -20,8 +20,6 @@ export default function UserContextComp({ children }: Props): JSX.Element {
 
   useEffect(() => {
     // Listen authenticated user
-    const app = createFirebaseApp()
-    const auth = getAuth(app)
     const unSubscriber = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {

@@ -16,14 +16,18 @@ const Home = () => {
 
   return (
     <div>
-      <Container>
-        <Col md={4}>
-          <Button color='primary'>ルームを作成</Button>
-          <Link href={`/gameroom/1`} passHref>
-            <Button color='primary'>ルームに参加</Button>
-          </Link>
-        </Col>
-      </Container>
+      {isLoading ? (
+        <p>...ロード中</p>
+      ) : (
+        <Container>
+          <Col md={4}>
+            <Button color='primary'>ルームを作成</Button>
+            <Link href={`/gameroom/1`} passHref>
+              <Button color='primary'>ルームに参加</Button>
+            </Link>
+          </Col>
+        </Container>
+      )}
     </div>
   )
 }
