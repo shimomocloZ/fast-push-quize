@@ -23,7 +23,7 @@ export default function UserContextComp({ children }: Props): JSX.Element {
 
   useEffect(() => {
     // Listen authenticated user
-    const unSubscriber = onAuthStateChanged(auth, async (user) => {
+    const unSubscriber = onAuthStateChanged(auth, (user) => {
       try {
         if (user) {
           // User is signed in.

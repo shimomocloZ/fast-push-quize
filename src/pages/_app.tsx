@@ -1,7 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import AppProvider from '../context/appContext'
 import UserProvider, { useUser } from '../context/userContext'
 
 // Custom App to wrap it with context provider
@@ -10,11 +9,13 @@ export default function App({ Component, pageProps }) {
   const { isLoading, user } = useUser()
   const router = useRouter()
   useEffect(() => {
+    if (router.pathname === '/signup') return
+    if (router.pathname === '/login') return
     if (isLoading) {
       return
     }
     // You know that the user is loaded: either logged in or out!
-    console.log(user)
+    console.log('User', user)
     if (user === null) {
       // setAuthenticated(false)
       router.push({ pathname: '/login', query: { redirected: 'yes' } })
@@ -22,13 +23,11 @@ export default function App({ Component, pageProps }) {
 
     // setAuthenticated(true)
     // You also have your firebase app initialized
-  }, [])
+  }, [user, isLoading])
 
   return (
-    <AppProvider>
-      <UserProvider>
-        <Component {...pageProps} />
-      </UserProvider>
-    </AppProvider>
+    <UserProvider>
+      <Component {...pageProps} />
+    </UserProvider>
   )
 }
