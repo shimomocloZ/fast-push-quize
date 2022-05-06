@@ -1,3 +1,6 @@
+/**
+ * User Context
+ */
 import { onAuthStateChanged, User } from 'firebase/auth'
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { auth } from '../firebase/clientApp'

@@ -1,9 +1,16 @@
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import Link from 'next/link'
-import React from 'react'
+import { useRouter } from 'next/router'
+import React, { useState } from 'react'
+import { Toast, ToastBody, ToastHeader } from 'reactstrap'
 import { auth } from '../../firebase/clientApp'
 
 const Login = () => {
+  const router = useRouter()
+  const { redirected } = router.query
+  const isAuthenticated = redirected !== 'yes'
+  const [showToast, setShowToast] = useState(true)
+  const toggleToast = () => setShowToast(!showToast)
   const handleSubmit = (event: any) => {
     event.preventDefault()
 
@@ -19,6 +26,16 @@ const Login = () => {
 
   return (
     <div>
+      {!isAuthenticated ? (
+        <Toast className='bg-danger' style={{ width: '100%' }} isOpen={showToast}>
+          <ToastHeader toggle={toggleToast}>
+            ログインしていないため、リダイレクトされました。ログインしてください。
+          </ToastHeader>
+          <ToastBody>ログインしてください。</ToastBody>
+        </Toast>
+      ) : (
+        <></>
+      )}
       <h1>ログイン</h1>
       <form onSubmit={handleSubmit}>
         <div>
@@ -35,7 +52,7 @@ const Login = () => {
         </div>
         <hr />
         <div>
-          <Link href={'/signup'}>
+          <Link href={'/signup'} passHref>
             <button>Register</button>
           </Link>
         </div>
