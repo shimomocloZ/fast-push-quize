@@ -54,7 +54,7 @@ const Login = () => {
           <Label>パスワード</Label>
           <Input name='password' type='password' placeholder='password' onChange={onChangePassword} />
         </FormGroup>
-        <Button color='primary' onClick={onClickLogin}>
+        <Button color='primary' type='button' onClick={onClickLogin}>
           ログイン
         </Button>
         <FormGroup>
@@ -63,7 +63,9 @@ const Login = () => {
           </Link>
         </FormGroup>
         <div>
-          <Button color='secondary'>ゲストログイン</Button>
+          <Button color='secondary' type='button'>
+            ゲストログイン
+          </Button>
         </div>
       </Form>
     </div>

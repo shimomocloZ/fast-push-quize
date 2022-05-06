@@ -13,8 +13,7 @@ const SignUp = () => {
   const router = useRouter()
 
   const inputLengthZero = (): boolean => {
-    if (email.length === 0) return true
-    if (password.length === 0) return true
+    if (email.length === 0 && password.length === 0) return true
   }
 
   const onClickRegister = (event: React.MouseEvent<HTMLInputElement>): void => {

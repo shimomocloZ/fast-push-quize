@@ -2,11 +2,12 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import UserProvider, { useUser } from '../context/userContext'
+import { auth } from '../firebase/clientApp'
 
 // Custom App to wrap it with context provider
 export default function App({ Component, pageProps }) {
   // const { setAuthenticated } = useAppState()
-  const { isLoading, user } = useUser()
+  const { isLoading } = useUser()
   const router = useRouter()
   useEffect(() => {
     if (router.pathname === '/signup') return
@@ -15,15 +16,15 @@ export default function App({ Component, pageProps }) {
       return
     }
     // You know that the user is loaded: either logged in or out!
-    console.log('User', user)
-    if (user === null) {
-      // setAuthenticated(false)
-      router.push({ pathname: '/login', query: { redirected: 'yes' } })
-    }
+    auth.onAuthStateChanged((user) => {
+      if (user === null) {
+        router.push({ pathname: '/login', query: { redirected: 'yes' } })
+      }
+    })
 
     // setAuthenticated(true)
     // You also have your firebase app initialized
-  }, [user, isLoading])
+  }, [])
 
   return (
     <UserProvider>
