@@ -1,6 +1,10 @@
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth'
+/**
+ * User Context
+ */
+import { onAuthStateChanged, User } from 'firebase/auth'
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
-import { createFirebaseApp } from '../firebase/clientApp'
+import { auth, db } from '../firebase/clientApp'
 
 type UserContextType = {
   user: User | null
@@ -17,11 +21,8 @@ type Props = {
 export default function UserContextComp({ children }: Props): JSX.Element {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true) // Helpful, to update the UI accordingly.
-
   useEffect(() => {
     // Listen authenticated user
-    const app = createFirebaseApp()
-    const auth = getAuth(app)
     const unSubscriber = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
@@ -30,6 +31,18 @@ export default function UserContextComp({ children }: Props): JSX.Element {
           // You could also look for the user doc in your Firestore (if you have one):
           // const userDoc = await firebase.firestore().doc(`users/${uid}`).get()
           setUser(user)
+          // ユーザーのレコード作成
+          const registeredUser = await getDoc(doc(db, `users`, user.uid))
+          if (!registeredUser.exists()) {
+            console.log('user record not exists')
+            await setDoc(doc(db, 'users', user.uid), {
+              username: user.displayName ?? 'anonymous',
+              user_permission: user.isAnonymous ? 'anonymous' : 'general',
+              profile_url: user.photoURL ?? '',
+              created_at: serverTimestamp(),
+              updated_at: serverTimestamp(),
+            })
+          }
         } else setUser(null)
       } catch (error) {
         // Most probably a connection error. Handle appropriately.
