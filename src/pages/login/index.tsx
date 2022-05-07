@@ -1,4 +1,5 @@
-import { signInAnonymously, signInWithEmailAndPassword } from 'firebase/auth'
+import { GoogleAuthProvider, signInAnonymously, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
@@ -20,6 +21,20 @@ const Login = () => {
   const onClickLogin = (event: React.MouseEvent<HTMLInputElement>) => {
     event.preventDefault()
     signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log('ログイン成功=', userCredential.user.uid)
+        router.push('/')
+      })
+      .catch((error) => {
+        console.error(error)
+        alert('ログイン失敗！')
+      })
+  }
+
+  const onClickLoginWithGoogle = (event: React.MouseEvent<HTMLInputElement>) => {
+    event.preventDefault()
+    const provider = new GoogleAuthProvider()
+    signInWithPopup(auth, provider)
       .then((userCredential) => {
         console.log('ログイン成功=', userCredential.user.uid)
         router.push('/')
@@ -68,16 +83,23 @@ const Login = () => {
         <Button color='primary' type='button' onClick={onClickLogin}>
           ログイン
         </Button>
+        <Button color='link' type='button' onClick={onClickLoginWithGoogle}>
+          <Image
+            className='google-icon'
+            src={'/btn_google_signin_dark_normal_web@2x.png'}
+            width={191}
+            height={41}
+            alt='sign in with google.'
+          />
+        </Button>
+        <Button color='secondary' type='button' onClick={onClickLoginWithAnonymous}>
+          ゲストログイン
+        </Button>
         <FormGroup>
           <Link href={'/signup'} passHref>
             <a>ユーザーをお持ちでない方は、こちらから新規登録</a>
           </Link>
         </FormGroup>
-        <div>
-          <Button color='secondary' type='button' onClick={onClickLoginWithAnonymous}>
-            ゲストログイン
-          </Button>
-        </div>
       </Form>
     </div>
   )

@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import UserProvider, { useUser } from '../context/userContext'
@@ -27,8 +28,13 @@ export default function App({ Component, pageProps }) {
   }, [])
 
   return (
-    <UserProvider>
-      <Component {...pageProps} />
-    </UserProvider>
+    <>
+      <Head>
+        <link rel='shortcut icon' href='/favicon.ico' />
+      </Head>
+      <UserProvider>
+        <Component {...pageProps} />
+      </UserProvider>
+    </>
   )
 }
