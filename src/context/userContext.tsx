@@ -34,10 +34,11 @@ export default function UserContextComp({ children }: Props): JSX.Element {
           // ユーザーのレコード作成
           const registeredUser = await getDoc(doc(db, `users`, user.uid))
           if (!registeredUser.exists()) {
+            console.log('user record not exists')
             await setDoc(doc(db, 'users', user.uid), {
               username: user.displayName ?? 'anonymous',
               user_permission: user.isAnonymous ? 'anonymous' : 'general',
-              profile_url: '',
+              profile_url: user.photoURL ?? '',
               created_at: serverTimestamp(),
               updated_at: serverTimestamp(),
             })
