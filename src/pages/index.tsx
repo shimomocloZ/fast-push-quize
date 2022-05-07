@@ -1,10 +1,19 @@
+import { signOut } from 'firebase/auth'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { Button, Col, Container } from 'reactstrap'
 import { useUser } from '../context/userContext'
+import { auth } from '../firebase/clientApp'
 
 const Home = () => {
   const { isLoading, user } = useUser()
+  const router = useRouter()
+
+  const onClickLogout = async (event: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
+    await signOut(auth)
+    router.push('/login')
+  }
 
   useEffect(() => {
     if (!isLoading) {
@@ -26,6 +35,9 @@ const Home = () => {
               <Button color='primary'>ルームに参加</Button>
             </Link>
           </Col>
+          <Button color='secondary' onClick={onClickLogout}>
+            ログアウト
+          </Button>
         </Container>
       )}
     </div>

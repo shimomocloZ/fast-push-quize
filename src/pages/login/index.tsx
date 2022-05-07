@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { Button, Form, FormGroup, Input, Label, Toast, ToastHeader } from 'reactstrap'
-import { useUser } from '../../context/userContext'
 import { auth } from '../../firebase/clientApp'
 
 const Login = () => {
@@ -13,7 +12,6 @@ const Login = () => {
   const [showToast, setShowToast] = useState<boolean>(true)
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const { isLoading, user, setUser } = useUser()
 
   const toggleToast = () => setShowToast(!showToast)
   const onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>): void => setEmail(event.target.value)
